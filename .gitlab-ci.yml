@@ -1,0 +1,46 @@
+stages:
+  - .pre
+  - deploy
+
+.pre-html-css:
+  stage: .pre
+  tags:
+    - docker
+  image: node
+  script:
+    - npm install htmlhint stylelint stylelint-config-standard
+    - npx htmlhint --config .htmlhint.rc public_html/*.html > linthtml_report.txt
+  artifacts:
+    paths:
+      - linthtml_report.txt
+
+.pre-js:
+  stage: .pre
+  tags:
+    - docker
+  image: node
+  script:
+    - npm install eslint
+    - npx eslint public_html/js/myScript.js > lintes_report.txt
+  artifacts:
+    paths:
+      - lintes_report.txt
+
+pages:
+  stage: deploy
+  script:
+    - mkdir -p public
+    - cp public_html/index.html public/
+  artifacts:
+    paths:
+      - public
+
+badges:    #semble ne rien rendre, pas compris comment ca marchait
+  stage: deploy
+  script:
+    - echo badges
+  artifacts:
+    paths:
+      - html5.svg
+      - js.svg
+  when: always
